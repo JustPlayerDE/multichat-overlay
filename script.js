@@ -31,6 +31,10 @@ const ignoreChatters = urlParams.get("ignoreChatters") || "";
 const scrollDirection = GetIntParam("scrollDirection") || 1;
 const imageEmbedPermissionLevel = GetIntParam("imageEmbedPermissionLevel") || 20;
 
+// Because there is no proxy that protects the streamer's ip, this is default to Owner
+// If this will be added to the configurator, add a warning about that
+const videoEmbedPermissionLevel = GetIntParam("videoEmbedPermissionLevel") || 40;
+
 const showTwitchMessages = GetBooleanParam("showTwitchMessages", true);
 const showTwitchAnnouncements = GetBooleanParam("showTwitchAnnouncements", true);
 const showTwitchSubs = GetBooleanParam("showTwitchSubs", true);
@@ -350,6 +354,30 @@ async function TwitchChatMessage(data) {
 		urlObj.hash = '';
 
 		image.src = "https://external-content.duckduckgo.com/iu/?u=" + urlObj.toString();
+	} else if(IsThisUserAllowedToPostImagesOrNotReturnTrueIfTheyCanReturnFalseIfTheyCannot(videoEmbedPermissionLevel, data, 'twitch') && IsVideoUrl(message)) {
+		const video = document.createElement('video');
+
+		video.autoplay = true;
+		video.muted = true;
+		video.loop = true;
+		video.playsInline = true;
+		video.style.padding = "20px 0px";
+		video.style.width = "100%";
+
+		// fallback message
+		video.textContent = "Video not supported :(";
+
+		video.onloadeddata = function () {
+			messageDiv.innerHTML = '';
+			messageDiv.appendChild(video);
+
+			AddMessageItem(instance, data.message.msgId, 'twitch', data.user.id);
+		};
+
+		const urlObj = new URL(message);
+		urlObj.search = '';
+		urlObj.hash = '';
+		video.src = urlObj.toString();
 	}
 	else {
 		AddMessageItem(instance, data.message.msgId, 'twitch', data.user.id);
@@ -853,6 +881,30 @@ function YouTubeMessage(data) {
 		urlObj.hash = '';
 
 		image.src = "https://external-content.duckduckgo.com/iu/?u=" + urlObj.toString();
+	} else if(IsThisUserAllowedToPostImagesOrNotReturnTrueIfTheyCanReturnFalseIfTheyCannot(videoEmbedPermissionLevel, data, 'youtube') && IsVideoUrl(message)) {
+		const video = document.createElement('video');
+
+		video.autoplay = true;
+		video.muted = true;
+		video.loop = true;
+		video.playsInline = true;
+		video.style.padding = "20px 0px";
+		video.style.width = "100%";
+
+		// fallback message
+		video.textContent = "Video not supported :(";
+
+		video.onloadeddata = function () {
+			messageDiv.innerHTML = '';
+			messageDiv.appendChild(video);
+
+			AddMessageItem(instance, data.message.msgId, 'twitch', data.user.id);
+		};
+
+		const urlObj = new URL(message);
+		urlObj.search = '';
+		urlObj.hash = '';
+		video.src = urlObj.toString();
 	}
 	else {
 		AddMessageItem(instance, data.eventId, 'youtube', data.user.id);
@@ -1133,6 +1185,17 @@ function IsImageUrl(url) {
 		const { pathname } = new URL(url);
 		// Only check the pathname since query parameters are not included in it.
 		return /\.(png|jpe?g|webp|gif)$/i.test(pathname);
+	} catch (error) {
+		// Return false if the URL is invalid.
+		return false;
+	}
+}
+
+function IsVideoUrl(url) {
+	try {
+		const { pathname } = new URL(url);
+		// Very basic support, we dont need more than mp4 or webm honestly
+		return /\.(mp4|webm)$/i.test(pathname);
 	} catch (error) {
 		// Return false if the URL is invalid.
 		return false;
