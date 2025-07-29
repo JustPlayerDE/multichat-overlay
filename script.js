@@ -35,6 +35,15 @@ const imageEmbedPermissionLevel = GetIntParam("imageEmbedPermissionLevel") || 20
 // If this will be added to the configurator, add a warning about that
 const videoEmbedPermissionLevel = GetIntParam("videoEmbedPermissionLevel") || 40;
 
+// Some sane-default whitelisted domains
+const videoEmbedWhitelistedDomains = GetArrayParam("videoEmbedWhitelistedDomains", [
+	"tenor.com",
+	"discordapp.com", // Discord CDN
+	"discordcdn.com", // Discord CDN
+	"discordapp.net", // Discord media proxy, we cant use it as this has some stuff that only allows discord to generate valid urls afaik
+	"giphy.com"
+])
+
 const showTwitchMessages = GetBooleanParam("showTwitchMessages", true);
 const showTwitchAnnouncements = GetBooleanParam("showTwitchAnnouncements", true);
 const showTwitchSubs = GetBooleanParam("showTwitchSubs", true);
@@ -375,7 +384,7 @@ async function TwitchChatMessage(data) {
 		};
 
 		const urlObj = new URL(message);
-		urlObj.search = '';
+		//urlObj.search = ''; // Discord wont allow access without these
 		urlObj.hash = '';
 		video.src = urlObj.toString();
 	}
@@ -902,7 +911,7 @@ function YouTubeMessage(data) {
 		};
 
 		const urlObj = new URL(message);
-		urlObj.search = '';
+		//urlObj.search = ''; // Discord wont allow access without these
 		urlObj.hash = '';
 		video.src = urlObj.toString();
 	}
@@ -1138,6 +1147,17 @@ function GetIntParam(paramName) {
 	return intValue;
 }
 
+function GetArrayParam(paramName, defaultValue) {
+	const urlParams = new URLSearchParams(window.location.search);
+	const paramValue = urlParams.get(paramName);
+
+	if (paramValue === null) {
+		return defaultValue || [];
+	}
+
+	return paramValue.split(',');
+}
+
 function GetCurrentTimeFormatted() {
 	const now = new Date();
 	let hours = now.getHours();
@@ -1193,11 +1213,15 @@ function IsImageUrl(url) {
 
 function IsVideoUrl(url) {
 	try {
-		const { pathname } = new URL(url);
-		// Very basic support, we dont need more than mp4 or webm honestly
-		return /\.(mp4|webm)$/i.test(pathname);
+		const { hostname, pathname } = new URL(url);
+		// we dont need more than mp4 or webm honestly
+		if (!/\.(mp4|webm)$/i.test(pathname)) return false;
+
+		// We have to use a whitelist here since there is no other way to protect the IP of someone for videos sadge
+		return videoEmbedWhitelistedDomains.some(domain => 
+			hostname.toLowerCase() === domain.toLowerCase() || hostname.toLowerCase().endsWith(`.${domain.toLowerCase()}`)
+		);
 	} catch (error) {
-		// Return false if the URL is invalid.
 		return false;
 	}
 }
