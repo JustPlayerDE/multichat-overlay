@@ -364,22 +364,32 @@ async function TwitchChatMessage(data) {
 
 		image.src = "https://external-content.duckduckgo.com/iu/?u=" + urlObj.toString();
 	} else if(IsThisUserAllowedToPostImagesOrNotReturnTrueIfTheyCanReturnFalseIfTheyCannot(videoEmbedPermissionLevel, data, 'twitch') && IsVideoUrl(message)) {
-		const video = document.createElement('video');
+		const wrapper = document.createElement('div');
+		wrapper.style.aspectRatio = '16 / 9';
+		wrapper.style.width = '100%';
+		wrapper.style.overflow = 'hidden';
+		wrapper.style.padding = '20px 0';
 
+		const video = document.createElement('video');
 		video.autoplay = true;
 		video.muted = true;
 		video.loop = true;
 		video.playsInline = true;
-		video.style.padding = "20px 0px";
-		video.style.width = "100%";
+		video.style.width = '100%';
+		video.style.height = '100%';
+		video.style.objectFit = 'contain';
 
-		// fallback message
 		video.textContent = "Video not supported :(";
 
 		video.onloadeddata = function () {
 			messageDiv.innerHTML = '';
-			messageDiv.appendChild(video);
+			wrapper.appendChild(video);
+			messageDiv.appendChild(wrapper);
 
+			AddMessageItem(instance, data.message.msgId, 'twitch', data.user.id);
+		};
+
+		video.onerror = function() {
 			AddMessageItem(instance, data.message.msgId, 'twitch', data.user.id);
 		};
 
@@ -891,22 +901,32 @@ function YouTubeMessage(data) {
 
 		image.src = "https://external-content.duckduckgo.com/iu/?u=" + urlObj.toString();
 	} else if(IsThisUserAllowedToPostImagesOrNotReturnTrueIfTheyCanReturnFalseIfTheyCannot(videoEmbedPermissionLevel, data, 'youtube') && IsVideoUrl(message)) {
-		const video = document.createElement('video');
+		const wrapper = document.createElement('div');
+		wrapper.style.aspectRatio = '16 / 9';
+		wrapper.style.width = '100%';
+		wrapper.style.overflow = 'hidden';
+		wrapper.style.padding = '20px 0';
 
+		const video = document.createElement('video');
 		video.autoplay = true;
 		video.muted = true;
 		video.loop = true;
 		video.playsInline = true;
-		video.style.padding = "20px 0px";
-		video.style.width = "100%";
+		video.style.width = '100%';
+		video.style.height = '100%';
+		video.style.objectFit = 'contain';
 
-		// fallback message
 		video.textContent = "Video not supported :(";
 
 		video.onloadeddata = function () {
 			messageDiv.innerHTML = '';
-			messageDiv.appendChild(video);
+			wrapper.appendChild(video);
+			messageDiv.appendChild(wrapper);
 
+			AddMessageItem(instance, data.message.msgId, 'youtube', data.user.id);
+		};
+
+		video.onerror = function() {
 			AddMessageItem(instance, data.message.msgId, 'youtube', data.user.id);
 		};
 
