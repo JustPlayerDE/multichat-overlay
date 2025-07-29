@@ -172,6 +172,48 @@
 			"group": "General"
 		},
 		{
+			"id": "videoEmbedPermissionLevel",
+			"label": "Embed Videos",
+			"description": "Automatically embed videos from whitelisted domains for these users",
+			"type": "select",
+			"options": [
+				{
+					"value": 40,
+					"label": "Broadcaster"
+				},
+				{
+					"value": 30,
+					"label": "Mods & Broadcaster"
+				},
+				{
+					"value": 20,
+					"label": "VIPs, Mods & Broadcaster"
+				},
+				{
+					"value": 15,
+					"label": "Subs, VIPs, Mods & Broadcaster"
+				},
+				{
+					"value": 10,
+					"label": "Everyone"
+				},
+				{
+					"value": 69420,
+					"label": "Nobody"
+				}
+			],
+			"defaultValue": 20,
+			"group": "General"
+		},
+		{
+			"id": "videoEmbedWhitelistedDomains",
+			"label": "Whitlisted Video Embed Domains",
+			"description": "Only add trusted domains. Do not include user-controlled domains unless you fully trust them. Separate multiple entries with commas (e.g. example.com, media.site.com)",
+			"type": "text",
+			"defaultValue": "giphy.com,tenor.com,discordapp.com,discordcdn.com,discordapp.net",
+			"group": "General"
+		},
+		{
 			"id": "showTwitchMessages",
 			"label": "Chat Messages",
 			"description": "",
