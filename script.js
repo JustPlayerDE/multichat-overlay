@@ -390,6 +390,7 @@ async function TwitchChatMessage(data) {
 		};
 
 		video.onerror = function() {
+			wrapper.remove()
 			AddMessageItem(instance, data.message.msgId, 'twitch', data.user.id);
 		};
 
@@ -927,6 +928,7 @@ function YouTubeMessage(data) {
 		};
 
 		video.onerror = function() {
+			wrapper.remove()
 			AddMessageItem(instance, data.message.msgId, 'youtube', data.user.id);
 		};
 
