@@ -898,7 +898,7 @@ function YouTubeMessage(data) {
 			messageDiv.innerHTML = '';
 			messageDiv.appendChild(video);
 
-			AddMessageItem(instance, data.message.msgId, 'twitch', data.user.id);
+			AddMessageItem(instance, data.message.msgId, 'youtube', data.user.id);
 		};
 
 		const urlObj = new URL(message);
